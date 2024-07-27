@@ -1,4 +1,5 @@
 <?php
+    include 'console_text.php';
 
     function get_context()
     {
@@ -53,8 +54,10 @@
         return $xpath;
     }
 
-    function fetchProductUrls($storeUrl) {
-        $collectionUrl = $storeUrl . '/collections/all';
+    function fetchProductUrls($i, $storeUrl) {
+        echo "$i.\tFetching products from [" . constyle(strtoupper($storeUrl), 35) . "]\n\n";
+
+        $collectionUrl = 'https://' . $storeUrl . '/collections/all';
         $productUrls = [];
         $page = 1;
 
@@ -78,24 +81,12 @@
             if($i<1) break;
             else $page++;
 
-            echo "\r";
-            echo "\033[1;32m";
-            echo "Page: ";
-            echo "\033[1;31m";
-            echo $page;
-            echo "\033[1;32m";
-            echo " ==> URL Found: ";
-            echo "\033[1;31m";
-            echo count($nodes);
-            echo "\033[1;32m";
-            echo " ==> Total URLs: ";
-            echo "\033[1;31m";
-            echo count($productUrls);
-            echo "\033[0m";
+            clear_line();
+            echo constyle("\tPage: ", 32).constyle($page-1, 31).constyle(" ==> URLs in the Page: ", 32).constyle($i, 31).constyle(" ==> Total Product URLs: ", 32).constyle(count($productUrls), 31);
 
         } while (!empty($nodes));
 
-        echo "\n\nTotal Product URLs: " . count($productUrls) . "\n";
+        echo "\n\n" . constyle("\tTotal Product URLs Found: ", 33).constyle(constyle(count($productUrls), 31), 1) . "\n\n";
 
         return array_unique($productUrls);
     }

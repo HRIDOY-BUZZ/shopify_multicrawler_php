@@ -2,6 +2,8 @@
     include 'secondary_functions.php';
 
     function part1() {
+        echo "\n" . constyle(constyle("[PART-1]", 1), 36) .": Fetching product URLs ===> \n\n";
+
         if (!file_exists(__DIR__.'/../shops.txt')) {
             echo "shops.txt not found.\n";
             return;
@@ -9,11 +11,17 @@
 
         $storeUrls = file(__DIR__.'/../shops.txt', FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
         
+        $i = 0;
         foreach ($storeUrls as $storeUrl) {
-            echo "Fetching products from $storeUrl...\n";
-            $productUrls = fetchProductUrls($storeUrl);
-            if ($productUrls) {
+            $i++;
+            if(strpos($storeUrl, 'http') !== false || strpos($storeUrl, '/') !== false) {
                 $storeDomain = parse_url($storeUrl, PHP_URL_HOST);
+            } else {
+                $storeDomain = $storeUrl;
+            }
+
+            $productUrls = fetchProductUrls($i, $storeDomain);
+            if ($productUrls) {
                 saveToJson(__DIR__."/../shops/$storeDomain.json", $productUrls);
             }
         }
