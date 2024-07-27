@@ -27,5 +27,6 @@ function constyle($text="", $color=0) {
 
 
 function clear_line() {
+    echo "\r\033[K";
     echo "\r";
 }

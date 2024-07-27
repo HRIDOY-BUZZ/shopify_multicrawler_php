@@ -1,58 +1,6 @@
 <?php
     include 'console_text.php';
-
-    function get_context()
-    {
-        $options  = array(
-            "http" => array(
-                'user_agent' => 'Mozilla/5.0 (Windows NT 6.1; rv:19.0) Gecko/20100101 Firefox/19.0',
-                'method' => 'GET',
-            ), 
-            "ssl"=>array(
-                "verify_peer"           =>  false,
-                "verify_peer_name"      =>  false,
-                'allow_self_signed'     =>  true,
-                'verify_depth'          =>  0,
-                'curl_verify_ssl_peer'  =>  false,
-                'curl_verify_ssl_host'  =>  false,
-            ),
-        );
-        $context  = stream_context_create($options);
-        return $context;
-    }
-
-    function getXPathData($url) {
-        $html = file_get_contents($url, false, get_context()); //@
-
-        if (strpos($html, '404 Not Found') !== false || strpos($html, 'Page Not Found') !== false) {
-            return "break";
-        }
-
-        if ($html === false) {
-            echo "Failed to fetch $url\n";
-            return "break";
-        }
-
-        libxml_use_internal_errors(true); // suppress errors
-        $dom = new DOMDocument();
-        $dom->loadHTML(mb_convert_encoding($html, 'HTML-ENTITIES', 'UTF-8'));
-        libxml_clear_errors(); // clear errors
-
-        $headers = $dom->getElementsByTagName('header');
-        while ($headers->length > 0) {
-            $header = $headers->item(0);
-            $header->parentNode->removeChild($header);
-        }
-
-        $footers = $dom->getElementsByTagName('footer');
-        while ( $footers && $footers->length > 0) {
-            $footer = $footers->item(0);
-            $footer->parentNode->removeChild($footer);
-        }
-
-        $xpath = new DOMXPath($dom);
-        return $xpath;
-    }
+    include 'extra_functions.php';
 
     function fetchProductUrls($i, $storeUrl) {
         echo "$i.\tFetching products from [" . constyle(strtoupper($storeUrl), 35) . "]\n\n";
@@ -71,8 +19,13 @@
             $nodes = $xpath->query("//a[contains(@href, '/products/')]");
             $i = 0;
             foreach ($nodes as $node) {
-                $full_url = $storeUrl . $node->getAttribute('href');
-                if(!in_array($full_url, $productUrls)) {
+                $purl = $node->getAttribute('href');
+                if(strpos($purl, $storeUrl) === false) {
+                    $full_url = "https://" . $storeUrl . $node->getAttribute('href');
+                } else {
+                    $full_url = $purl;
+                }
+                if(!is_duplicate($full_url, $productUrls)) {
                     $productUrls[] = $full_url;
                     $i++;
                 }
@@ -91,8 +44,8 @@
         return array_unique($productUrls);
     }
 
-    function scrapeProductData($productUrl) {
-        $jsonUrl = $productUrl . '.json';
+    function scrapeProductData($p, $productUrl) {
+        $jsonUrl = 'https://' . $productUrl . '.json';
         $response = @file_get_contents($jsonUrl);
 
         if ($response === false) {
@@ -106,11 +59,10 @@
 
         $productInfo = [];
         $productTitle = $productData['title'];
+        clear_line();
+        echo $productTitle;
         $description = strip_tags($productData['body_html']);
-        $category = $productData['product_type'];
-        $tags = $productData['tags'] ? implode(' > ', explode(', ', $productData['tags'])) : '';
-
-        $categoryPath = $category . ($tags ? ' > ' . $tags : '');
+        $category = $productData['product_type'] ? $productData['product_type'] : '';
 
         $images = [];
         foreach ($productData['images'] as $img) {
@@ -127,7 +79,7 @@
             $productInfo[] = [
                 'Title' => $title,
                 'Description' => $description,
-                'Category' => $categoryPath,
+                'Category' => $category,
                 'Regular Price' => $regularPrice,
                 'Sale Price' => $salePrice,
                 'Main Image URL' => $mainImageUrl,
