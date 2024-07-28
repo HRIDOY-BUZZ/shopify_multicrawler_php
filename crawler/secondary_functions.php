@@ -1,6 +1,6 @@
 <?php
     function fetchProductUrls($count, $i, $storeUrl) {
-        echo "$i of $count.\tFetching products from [" . constyle(strtoupper($storeUrl), 95) . "]\n\n";
+        echo "$i of $count.\tFetching products from [" . constyle(strtoupper($storeUrl), 33) . "]\n\n";
 
         $collectionUrl = 'https://' . $storeUrl . '/collections/all';
         $productUrls = [];
@@ -39,7 +39,11 @@
 
         } while (!empty($nodes));
 
-        echo "\n\n\t" . constyle("Total Product URLs Found: ", 93).constyle(constyle(count($productUrls), 91), 1) . "\n\n";
+        clear_line();
+        echo constyle("\tCalculating...", 94);
+        sleep(1);
+        clear_line();
+        echo "\t" . constyle("Total Product URLs Found: ", 93).constyle(constyle(count($productUrls), 91), 1) . "\n\n";
 
         return array_unique($productUrls);
     }
@@ -47,13 +51,13 @@
     function scrapeProductData($count, $p, $v, $productUrl) {
         $prcnt = 0;
         $jsonUrl = $productUrl . '.json';
-        $response = file_get_contents($jsonUrl, false, get_context());
+        $response = @file_get_contents($jsonUrl, false, get_context());
 
         if ($response === false) {
             return null;
         }
 
-        $decoded = json_decode($response, true);
+        $decoded = @json_decode($response, true);
         if (json_last_error() !== JSON_ERROR_NONE) {
             return null;
         }
@@ -102,6 +106,7 @@
                 'Category' => $category,
                 'Regular_Price' => $regularPrice,
                 'Sale_Price' => $salePrice,
+                'Brand' => $productData['vendor'],
                 'URL' => $productUrl . '?variant=' . $variant['id'],
                 'Image_URL' => $mainImageUrl,
                 'Description' => $description,

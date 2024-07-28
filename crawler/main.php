@@ -12,16 +12,21 @@
 START:
 
 clear_console();
+//Display Intro
+echo constyle("\n\t\tSHOPIFY WEB MULTI-CRAWLER\n\n", 96);
+
 // Display MENU
-echo constyle(constyle("\n\t\t[MENU]:\n\n", 96), 4);
-echo constyle("\t1.\tRun Full Crawler\n", 93);
-echo constyle("\t2.\tRun Part-1 Only\n", 93);
-echo constyle("\t3.\tRun Part-2 Only\n", 93);
-echo constyle("\t0.\tExit\n\n", 93);
+echo constyle(constyle("\n\t\t\t[MENU]:\n\n", 96), 4);
+echo constyle(
+    "\t\t1.\tRun Full Crawler\n".
+    "\t\t2.\tRun Part-1 Only\n".
+    "\t\t3.\tRun Part-2 Only\n".
+    "\t\t0.\tExit\n\n", 
+93);
 
 INPUT:
 // Get user input
-echo constyle("\tEnter your choice: ", 92);
+echo constyle("\t\tEnter your choice: ", 92);
 $choice = get_single_char();
 echo $choice . "\n";
 
@@ -29,28 +34,20 @@ echo $choice . "\n";
 switch ($choice) {
     case '1':
         clear_console();
-        part1();
-        part2();
-        pause();
-        goto START;
-        break;
+        part1(); part2(); pause();
+        goto START; break;
     case '2':
         clear_console();
-        part1();
-        pause();
-        goto START;
-        break;
+        part1(); pause();
+        goto START; break;
     case '3':
         clear_console();
-        part2();
-        pause();
-        goto START;
-        break;
+        part2(); pause();
+        goto START; break;
     case '0':
         exit;
     default:
-        echo "Invalid choice. Please try again.\n";
-        goto INPUT;
-        break;
+        echo "\t\tInvalid choice. Please try again.\n\n";
+        goto INPUT; break;
 }
 ?>

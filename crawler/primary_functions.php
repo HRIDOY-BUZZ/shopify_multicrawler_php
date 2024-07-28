@@ -46,9 +46,9 @@
             $allProducts = [];
             
             $fp = fopen(__DIR__ . '/../feeds/' . $storeDomain . '.csv', 'w');
-            fputcsv($fp, array("ID", "Title", "Category", "Regular Price", "Sale Price", "URL", "ImageURL", "Description"));
+            fputcsv($fp, array("ID", "Title", "Category", "Regular Price", "Sale Price", "Brand", "URL", "ImageURL", "Description"));
             
-            echo ++$i . " of ". count($shopFiles) . ".\tCrawling products from [" . constyle(strtoupper($storeDomain), 95) . "]\n\n";
+            echo ++$i . " of ". count($shopFiles) . ".\tCrawling products from [" . constyle(strtoupper($storeDomain), 33) . "]\n\n";
             
             $p = 0; $v = 0;
             foreach ($productUrls as $productUrl) {
@@ -64,10 +64,12 @@
             fclose($fp);
 
             clear_line();
-            echo constyle("\tCalculating...\n", 94);
+            echo constyle("\tCalculating...", 94);
             unlink($shopFile);
             sleep(1);
-            echo "\n\t" . constyle("Total Products Crawled: ", 93) . constyle($p, 91) . " ==> " . constyle("Total items Found: ", 93) . constyle($v, 91) . "\n\n";
+            clear_line();
+            echo "\t" . constyle("Total Products Crawled: ", 93) . constyle($p, 91) . " ==> " . constyle("Total items Found: ", 93) . constyle($v, 91) . "\n\n";
         }
+        echo "\t" . constyle("DONE!", 92) . "\n\n";
     }
 ?>
