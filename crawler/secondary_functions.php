@@ -1,6 +1,6 @@
 <?php
-    function fetchProductUrls($i, $storeUrl) {
-        echo "$i.\tFetching products from [" . constyle(strtoupper($storeUrl), 95) . "]\n\n";
+    function fetchProductUrls($count, $i, $storeUrl) {
+        echo "$i of $count.\tFetching products from [" . constyle(strtoupper($storeUrl), 95) . "]\n\n";
 
         $collectionUrl = 'https://' . $storeUrl . '/collections/all';
         $productUrls = [];
@@ -39,12 +39,12 @@
 
         } while (!empty($nodes));
 
-        echo "\n\n" . constyle("\tTotal Product URLs Found: ", 93).constyle(constyle(count($productUrls), 91), 1) . "\n\n";
+        echo "\n\n\t" . constyle("Total Product URLs Found: ", 93).constyle(constyle(count($productUrls), 91), 1) . "\n\n";
 
         return array_unique($productUrls);
     }
 
-    function scrapeProductData($p, $v, $productUrl) {
+    function scrapeProductData($count, $p, $v, $productUrl) {
         $prcnt = 0;
         $jsonUrl = $productUrl . '.json';
         $response = file_get_contents($jsonUrl, false, get_context());
@@ -92,6 +92,7 @@
             $mainImageUrl = $images[$variant['image_id']] ?? reset($images);
             $title = "$productTitle - $variantTitle";
 
+            $prcnt = round(($p / $count) * 100, 0);
             clear_line();
             echo "\t[". constyle("PRODUCTS: ", 94) . constyle($p, 91) . "] [" . constyle("VARIANTS: ", 94) . constyle($v, 91) . "] [" . constyle("PROGRESS: ", 94) . constyle($prcnt, 91) . "%]";
 

@@ -22,11 +22,13 @@
                 $storeDomain = $storeUrl;
             }
 
-            $productUrls = fetchProductUrls($i, $storeDomain);
+            $productUrls = fetchProductUrls(count($storeUrls), $i, $storeDomain);
             if ($productUrls) {
                 saveToJson(__DIR__."/../shops/$storeDomain.json", $productUrls);
             }
         }
+
+        echo "\t" . constyle("DONE!", 92) . "\n\n";
     }
 
     function part2() {
@@ -46,11 +48,11 @@
             $fp = fopen(__DIR__ . '/../feeds/' . $storeDomain . '.csv', 'w');
             fputcsv($fp, array("ID", "Title", "Category", "Regular Price", "Sale Price", "URL", "ImageURL", "Description"));
             
-            echo ++$i . ".\tCrawling products from [" . constyle(strtoupper($storeDomain), 95) . "]\n\n";
+            echo ++$i . " of ". count($shopFiles) . ".\tCrawling products from [" . constyle(strtoupper($storeDomain), 95) . "]\n\n";
             
             $p = 0; $v = 0;
             foreach ($productUrls as $productUrl) {
-                $productData = scrapeProductData($p, $v, $productUrl);
+                $productData = scrapeProductData(count($productUrls), $p, $v, $productUrl);
                 if ($productData) {
                     foreach ($productData as $product) {
                         fputcsv($fp, $product);
