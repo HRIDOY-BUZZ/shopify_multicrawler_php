@@ -4,6 +4,8 @@
     include 'secondary_functions.php';
     include 'primary_functions.php';
 
+    clear_console();
+    
     // Display MENU
     echo constyle(constyle("\n\t\t[MENU]:\n\n", 96), 4);
     echo constyle("\t1.\tRun Full Crawler\n", 93);
@@ -11,7 +13,7 @@
     echo constyle("\t3.\tRun Part-2 Only\n", 93);
     echo constyle("\t0.\tExit\n\n", 93);
 
-INPUT:
+while(true) {
     // Get user input
     echo constyle("\tEnter your choice: ", 92);
     $choice = get_single_char();
@@ -36,6 +38,7 @@ INPUT:
             exit;
         default:
             echo "Invalid choice. Please try again.\n";
-            goto INPUT;
+            break;
     }
+}
 ?>

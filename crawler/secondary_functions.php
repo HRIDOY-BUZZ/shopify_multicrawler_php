@@ -22,6 +22,9 @@
                 } else {
                     $full_url = $purl;
                 }
+                if(strpos($full_url, '#') !== false) {
+                    $full_url = explode('#', $full_url)[0];
+                }
                 if(!is_duplicate($full_url, $productUrls)) {
                     $productUrls[] = $full_url;
                     $i++;
@@ -42,6 +45,7 @@
     }
 
     function scrapeProductData($p, $v, $productUrl) {
+        $prcnt = 0;
         $jsonUrl = $productUrl . '.json';
         $response = file_get_contents($jsonUrl, false, get_context());
 
@@ -49,7 +53,12 @@
             return null;
         }
 
-        $productData = json_decode($response, true)['product'];
+        $decoded = json_decode($response, true);
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            return null;
+        }
+
+        $productData = $decoded['product'];
         if (!$productData) {
             return null;
         }
@@ -84,7 +93,7 @@
             $title = "$productTitle - $variantTitle";
 
             clear_line();
-            echo "\t[". constyle("ITEMS", 94) ."]: ". constyle($p, 91) ." . ". constyle(++$v, 93) .". " . constyle($title, 92);
+            echo "\t[". constyle("PRODUCTS: ", 94) . constyle($p, 91) . "] [" . constyle("VARIANTS: ", 94) . constyle($v, 91) . "] [" . constyle("PROGRESS: ", 94) . constyle($prcnt, 91) . "%]";
 
             $productInfo[] = [
                 'ID' => $v,

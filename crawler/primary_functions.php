@@ -8,6 +8,10 @@
         }
 
         $storeUrls = file(__DIR__.'/../shops.txt', FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+        if(empty($storeUrls)) {
+            echo "shops.txt is empty.\n";
+            return;
+        }
         
         $i = 0;
         foreach ($storeUrls as $storeUrl) {
@@ -28,6 +32,10 @@
     function part2() {
         echo "\n" . constyle(constyle("[PART-2]", 1), 96) .": Crawling product data ===> \n\n";
         $shopFiles = glob(__DIR__.'/../shops/*.json');
+        if(count($shopFiles) == 0) {
+            echo "No shop files found in shops directory.\n";
+            return;
+        }
 
         $i = 0;
         foreach ($shopFiles as $shopFile) {
