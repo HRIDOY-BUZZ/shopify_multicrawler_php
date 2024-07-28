@@ -1,5 +1,4 @@
 <?php
-
 function get_context()
     {
         $options  = array(
@@ -73,4 +72,8 @@ function get_context()
         }
 
         return false;
+    }
+
+    function saveToJson($filename, $data) {
+        file_put_contents($filename, json_encode($data, JSON_PRETTY_PRINT));
     }

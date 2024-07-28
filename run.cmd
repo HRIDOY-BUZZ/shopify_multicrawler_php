@@ -1,0 +1,1 @@
+php -q crawler/main.php

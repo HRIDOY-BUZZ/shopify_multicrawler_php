@@ -1,9 +1,6 @@
 <?php
-    include 'console_text.php';
-    include 'extra_functions.php';
-
     function fetchProductUrls($i, $storeUrl) {
-        echo "$i.\tFetching products from [" . constyle(strtoupper($storeUrl), 35) . "]\n\n";
+        echo "$i.\tFetching products from [" . constyle(strtoupper($storeUrl), 95) . "]\n\n";
 
         $collectionUrl = 'https://' . $storeUrl . '/collections/all';
         $productUrls = [];
@@ -35,18 +32,18 @@
             else $page++;
 
             clear_line();
-            echo constyle("\tPage: ", 32).constyle($page-1, 31).constyle(" ==> URLs in the Page: ", 32).constyle($i, 31).constyle(" ==> Total Product URLs: ", 32).constyle(count($productUrls), 31);
+            echo constyle("\tPage: ", 92).constyle($page-1, 91).constyle(" ==> URLs in the Page: ", 92).constyle($i, 91).constyle(" ==> Total Product URLs: ", 92).constyle(count($productUrls), 91);
 
         } while (!empty($nodes));
 
-        echo "\n\n" . constyle("\tTotal Product URLs Found: ", 33).constyle(constyle(count($productUrls), 31), 1) . "\n\n";
+        echo "\n\n" . constyle("\tTotal Product URLs Found: ", 93).constyle(constyle(count($productUrls), 91), 1) . "\n\n";
 
         return array_unique($productUrls);
     }
 
-    function scrapeProductData($p, $productUrl) {
-        $jsonUrl = 'https://' . $productUrl . '.json';
-        $response = @file_get_contents($jsonUrl);
+    function scrapeProductData($p, $v, $productUrl) {
+        $jsonUrl = $productUrl . '.json';
+        $response = file_get_contents($jsonUrl, false, get_context());
 
         if ($response === false) {
             return null;
@@ -59,8 +56,6 @@
 
         $productInfo = [];
         $productTitle = $productData['title'];
-        clear_line();
-        echo $productTitle;
         $description = strip_tags($productData['body_html']);
         $category = $productData['product_type'] ? $productData['product_type'] : '';
 
@@ -69,38 +64,39 @@
             $images[$img['id']] = $img['src'];
         }
 
+        $p++;
         foreach ($productData['variants'] as $variant) {
+
+            if($variant['price'] == 0 || $variant['price'] == "") {
+                continue;
+            }
+
+            if($variant['compare_at_price'] && $variant['compare_at_price'] != "") {
+                $regularPrice = $variant['compare_at_price'];
+                $salePrice = $variant['price'];
+            } else {
+                $regularPrice = $variant['price'];
+                $salePrice = "";
+            }
+
             $variantTitle = $variant['title'];
-            $regularPrice = $variant['compare_at_price'] ?? $variant['price'];
-            $salePrice = $variant['compare_at_price'] ? $variant['price'] : '';
             $mainImageUrl = $images[$variant['image_id']] ?? reset($images);
             $title = "$productTitle - $variantTitle";
 
+            clear_line();
+            echo "\t[". constyle("ITEMS", 94) ."]: ". constyle($p, 91) ." . ". constyle(++$v, 93) .". " . constyle($title, 92);
+
             $productInfo[] = [
+                'ID' => $v,
                 'Title' => $title,
-                'Description' => $description,
                 'Category' => $category,
-                'Regular Price' => $regularPrice,
-                'Sale Price' => $salePrice,
-                'Main Image URL' => $mainImageUrl,
+                'Regular_Price' => $regularPrice,
+                'Sale_Price' => $salePrice,
+                'URL' => $productUrl . '?variant=' . $variant['id'],
+                'Image_URL' => $mainImageUrl,
+                'Description' => $description,
             ];
         }
-
         return $productInfo;
-    }
-
-    function saveToJson($filename, $data) {
-        file_put_contents($filename, json_encode($data, JSON_PRETTY_PRINT));
-    }
-
-    function saveToCsv($filename, $data) {
-        $fp = fopen($filename, 'w');
-        fputcsv($fp, array_keys($data[0]));
-
-        foreach ($data as $row) {
-            fputcsv($fp, $row);
-        }
-
-        fclose($fp);
     }
 ?>
