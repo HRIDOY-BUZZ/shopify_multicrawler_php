@@ -16,6 +16,7 @@
         $i = 0;
         foreach ($storeUrls as $storeUrl) {
             $i++;
+            $storeUrl = trim($storeUrl);
             if(strpos($storeUrl, 'http') !== false || strpos($storeUrl, '/') !== false) {
                 $storeDomain = parse_url($storeUrl, PHP_URL_HOST);
             } else {

@@ -23,6 +23,7 @@ function get_context()
         $html = @file_get_contents($url, false, get_context()); //@
 
         if (strpos($html, '404 Not Found') !== false || strpos($html, 'Page Not Found') !== false) {
+            echo "ERROR 404! NOT FOUND...\n";
             return "break";
         }
 
