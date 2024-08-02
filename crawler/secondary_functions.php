@@ -101,7 +101,7 @@
             echo "\t[". constyle("PRODUCTS: ", 94) . constyle($p, 91) . "] [" . constyle("VARIANTS: ", 94) . constyle($v, 91) . "] [" . constyle("PROGRESS: ", 94) . constyle($prcnt, 91) . "%]";
 
             $productInfo[] = [
-                'ID' => $v,
+                'ID' => $variant['id'],
                 'Title' => $title,
                 'Category' => $category,
                 'Regular_Price' => $regularPrice,

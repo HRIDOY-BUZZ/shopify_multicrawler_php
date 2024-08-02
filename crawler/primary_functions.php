@@ -46,7 +46,13 @@
             $productUrls = json_decode(file_get_contents($shopFile), true);
             $allProducts = [];
             
-            $fp = fopen(__DIR__ . '/../feeds/' . $storeDomain . '.csv', 'w');
+            $csvFilePath = __DIR__ . '/../feeds/' . $storeDomain . '.csv';
+            if (!$fp = @fopen($csvFilePath, 'w')) {
+                echo constyle("\nError: Unable to open file: ".$csvFilePath, 91) . "\n\n";
+                echo constyle("Please check if the file is already open.", 91) . "\n\n";
+                return;
+            }
+
             fputcsv($fp, array("ID", "Title", "Category", "Regular Price", "Sale Price", "Brand", "URL", "ImageURL", "Description"));
             
             echo ++$i . " of ". count($shopFiles) . ".\tCrawling products from [" . constyle(strtoupper($storeDomain), 33) . "]\n\n";

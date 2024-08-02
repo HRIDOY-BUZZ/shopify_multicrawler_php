@@ -50,4 +50,6 @@ INPUT:
             echo "\t\tInvalid choice. Please try again.\n\n";
             goto INPUT; break;
     }
+
+    goto START;
 ?>
