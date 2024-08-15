@@ -34,18 +34,52 @@ INPUT:
     switch ($choice) {
         case '1':
             clear_console();
-            part1(); part2(); pause();
+            $p1 = part1(); 
+
+            if($p1) {
+                echo "\t" . constyle("DONE!", 92) . "\n\n";
+                $p2 = part2();
+                if($p2) {
+                    echo "\t" . constyle("DONE!", 92) . "\n\n";
+                } else {
+                    echo "\t" . constyle("PART-2 FAILED TO EXECUTE!", 91) . "\n\n";
+                }
+            } else {
+                echo "\t" . constyle("PART-1 FAILED TO EXECUTE! PART-2 IGNORED...", 91) . "\n\n";
+            }
+            
+            pause();
             goto START; break;
+
         case '2':
             clear_console();
-            part1(); pause();
+            $p = part1();
+
+            if($p) {
+                echo "\t" . constyle("DONE!", 92) . "\n\n";
+            } else {
+                echo "\t" . constyle("PART-1 FAILED TO EXECUTE!", 91) . "\n\n";
+            }
+
+            pause();
             goto START; break;
+
         case '3':
             clear_console();
-            part2(); pause();
+            $p = part2(); 
+            
+            if($p) {
+                echo "\t" . constyle("DONE!", 92) . "\n\n";
+            } else {
+                echo "\t" . constyle("PART-2 FAILED TO EXECUTE!", 91) . "\n\n";
+            }
+
+            pause();
             goto START; break;
+
         case '0':
             exit;
+
         default:
             echo "\t\tInvalid choice. Please try again.\n\n";
             goto INPUT; break;

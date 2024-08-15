@@ -4,13 +4,13 @@
 
         if (!file_exists(__DIR__.'/../shops.txt')) {
             echo "shops.txt not found.\n";
-            return;
+            return false;
         }
 
         $storeUrls = file(__DIR__.'/../shops.txt', FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
         if(empty($storeUrls)) {
             echo "shops.txt is empty.\n";
-            return;
+            return false;
         }
         
         $i = 0;
@@ -23,13 +23,21 @@
                 $storeDomain = $storeUrl;
             }
 
-            $productUrls = fetchProductUrls(count($storeUrls), $i, $storeDomain);
-            if ($productUrls) {
-                saveToJson(__DIR__."/../shops/$storeDomain.json", $productUrls);
+            if (!is_dir(__DIR__ . '/../shops/')) {
+                mkdir(__DIR__ . '/../shops/');
+            }
+
+            if (!is_dir(__DIR__ . '/../shops/')) {
+                echo "\t" . constyle("Error creating directory: `shops`. Please check permissions...", 91) . "\n\n";
+                return false;
+            } else {
+                $productUrls = fetchProductUrls(count($storeUrls), $i, $storeDomain);
+                if ($productUrls) {
+                    saveToJson(__DIR__."/../shops/$storeDomain.json", $productUrls);
+                }
             }
         }
-
-        echo "\t" . constyle("DONE!", 92) . "\n\n";
+        return true;
     }
 
     function part2() {
@@ -37,7 +45,7 @@
         $shopFiles = glob(__DIR__.'/../shops/*.json');
         if(count($shopFiles) == 0) {
             echo "No shop files found in shops directory.\n";
-            return;
+            return false;
         }
 
         $i = 0;
@@ -46,37 +54,46 @@
             $productUrls = json_decode(file_get_contents($shopFile), true);
             $allProducts = [];
             
-            $csvFilePath = __DIR__ . '/../feeds/' . $storeDomain . '.csv';
-            if (!$fp = @fopen($csvFilePath, 'w')) {
-                echo constyle("\nError: Unable to open file: ".$csvFilePath, 91) . "\n\n";
-                echo constyle("Please check if the file is already open.", 91) . "\n\n";
-                return;
+            if (!is_dir(__DIR__ . '/../feeds/')) {
+                mkdir(__DIR__ . '/../feeds/');
             }
 
-            fputcsv($fp, array("ID", "Title", "Category", "Regular Price", "Sale Price", "Brand", "URL", "ImageURL", "Description"));
-            
-            echo ++$i . " of ". count($shopFiles) . ".\tCrawling products from [" . constyle(strtoupper($storeDomain), 33) . "]\n\n";
-            
-            $p = 0; $v = 0;
-            foreach ($productUrls as $productUrl) {
-                $productData = scrapeProductData(count($productUrls), $p, $v, $productUrl);
-                if ($productData) {
-                    foreach ($productData as $product) {
-                        fputcsv($fp, $product);
-                    }
-                    $p++;
-                    $v += count($productData);
+            if (!is_dir(__DIR__ . '/../feeds/')) {
+                echo "\t" . constyle("Error creating directory: `feeds`. Please check permissions...", 91) . "\n\n";
+                return false;
+            } else {
+                $csvFilePath = __DIR__ . '/../feeds/' . $storeDomain . '.csv';
+                if (!$fp = @fopen($csvFilePath, 'w')) {
+                    echo constyle("\nError: Unable to open file: ".$csvFilePath, 91) . "\n\n";
+                    echo constyle("Please check if the file is already open.", 91) . "\n\n";
+                    return false;
                 }
-            }
-            fclose($fp);
 
-            clear_line();
-            echo constyle("\tCalculating...", 94);
-            unlink($shopFile);
-            sleep(1);
-            clear_line();
-            echo "\t" . constyle("Total Products Crawled: ", 93) . constyle($p, 91) . " ==> " . constyle("Total items Found: ", 93) . constyle($v, 91) . "\n\n";
+                fputcsv($fp, array("ID", "Title", "Category", "Regular Price", "Sale Price", "Brand", "URL", "ImageURL", "Description"));
+                
+                echo ++$i . " of ". count($shopFiles) . ".\tCrawling products from [" . constyle(strtoupper($storeDomain), 33) . "]\n\n";
+                
+                $p = 0; $v = 0;
+                foreach ($productUrls as $productUrl) {
+                    $productData = scrapeProductData(count($productUrls), $p, $v, $productUrl);
+                    if ($productData) {
+                        foreach ($productData as $product) {
+                            fputcsv($fp, $product);
+                        }
+                        $p++;
+                        $v += count($productData);
+                    }
+                }
+                fclose($fp);
+
+                clear_line();
+                echo constyle("\tCalculating...", 94);
+                unlink($shopFile);
+                sleep(1);
+                clear_line();
+                echo "\t" . constyle("Total Products Crawled: ", 93) . constyle($p, 91) . " ==> " . constyle("Total items Found: ", 93) . constyle($v, 91) . "\n\n";
+            }
         }
-        echo "\t" . constyle("DONE!", 92) . "\n\n";
+        return true;
     }
 ?>
