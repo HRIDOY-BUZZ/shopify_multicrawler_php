@@ -8,20 +8,17 @@
         }
 
         $storeUrls = file(__DIR__.'/../shops.txt', FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+        
         if(empty($storeUrls)) {
             echo "shops.txt is empty.\n";
             return false;
         }
+
+        $storeUrls = filter_domains($storeUrls);
         
         $i = 0;
         foreach ($storeUrls as $storeUrl) {
             $i++;
-            $storeUrl = trim($storeUrl);
-            if(strpos($storeUrl, 'http') !== false || strpos($storeUrl, '/') !== false) {
-                $storeDomain = parse_url($storeUrl, PHP_URL_HOST);
-            } else {
-                $storeDomain = $storeUrl;
-            }
 
             if (!is_dir(__DIR__ . '/../shops/')) {
                 mkdir(__DIR__ . '/../shops/');
@@ -31,9 +28,9 @@
                 echo "\t" . constyle("Error creating directory: `shops`. Please check permissions...", 91) . "\n\n";
                 return false;
             } else {
-                $productUrls = fetchProductUrls(count($storeUrls), $i, $storeDomain);
+                $productUrls = fetchProductUrls(count($storeUrls), $i, $storeUrl);
                 if ($productUrls) {
-                    saveToJson(__DIR__."/../shops/$storeDomain.json", $productUrls);
+                    saveToJson(__DIR__."/../shops/$storeUrl.json", $productUrls);
                 }
             }
         }

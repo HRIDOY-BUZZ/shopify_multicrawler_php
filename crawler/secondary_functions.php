@@ -12,8 +12,9 @@
             $xpath = getXPathData($url);
 
             if($xpath == "break") break;
-
+            echo $url."\n";
             $nodes = $xpath->query("//a[contains(@href, '/products/')]");
+            echo "\t\t\tTotal Nodes: " . count($nodes) . "\n\n";
             $i = 0;
             foreach ($nodes as $node) {
                 $purl = $node->getAttribute('href');

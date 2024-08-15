@@ -20,7 +20,7 @@ function get_context()
     }
 
     function getXPathData($url) {
-        $html = @file_get_contents($url, false, get_context()); //@
+        $html = @file_get_contents($url, false, get_context(), 0, 10000000); //@
 
         if (strpos($html, '404 Not Found') !== false || strpos($html, 'Page Not Found') !== false) {
             echo "ERROR 404! NOT FOUND...\n";
@@ -73,6 +73,27 @@ function get_context()
         }
 
         return false;
+    }
+
+    function filter_domains($storeUrls) {
+        $new_domains = [];
+
+        foreach ($storeUrls as $storeUrl) {
+            $storeUrl = trim($storeUrl);
+
+            if(strpos($storeUrl, '=') !== 0) {
+
+                if(strpos($storeUrl, 'http') !== false || strpos($storeUrl, '/') !== false) {
+                    $storeUrl = parse_url($storeUrl, PHP_URL_HOST);
+                }
+
+                if(!is_duplicate($storeUrl, $new_domains)) {
+                    $new_domains[] = $storeUrl;
+                }
+            }
+        }
+
+        return $new_domains;
     }
 
     function saveToJson($filename, $data) {
