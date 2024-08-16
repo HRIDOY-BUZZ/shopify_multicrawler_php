@@ -12,9 +12,9 @@
             $xpath = getXPathData($url);
 
             if($xpath == "break") break;
-            echo $url."\n";
+            // echo $url."\n";
             $nodes = $xpath->query("//a[contains(@href, '/products/')]");
-            echo "\t\t\tTotal Nodes: " . count($nodes) . "\n\n";
+            // echo "\t\t\tTotal Nodes: " . count($nodes) . "\n\n";
             $i = 0;
             foreach ($nodes as $node) {
                 $purl = $node->getAttribute('href');
@@ -99,18 +99,18 @@
 
             $prcnt = round(($p / $count) * 100, 0);
             clear_line();
-            echo "\t[". constyle("PRODUCTS: ", 94) . constyle($p, 91) . "] [" . constyle("VARIANTS: ", 94) . constyle($v, 91) . "] [" . constyle("PROGRESS: ", 94) . constyle($prcnt, 91) . "%]";
+            echo "\t[". constyle("PRODUCTS: ", 94) . constyle($p, 91) . "] [" . constyle("VARIANTS: ", 94) . constyle($v, 91) . "] [" . constyle("PROGRESS: ", 94) . constyle($prcnt."%", 91) . "]";
 
             $productInfo[] = [
-                'ID' => $variant['id'],
-                'Title' => $title,
-                'Category' => $category,
-                'Regular_Price' => $regularPrice,
-                'Sale_Price' => $salePrice,
-                'Brand' => $productData['vendor'],
-                'URL' => $productUrl . '?variant=' . $variant['id'],
-                'Image_URL' => $mainImageUrl,
-                'Description' => $description,
+                'ID'            =>  $variant['id'],
+                'Title'         =>  $title,
+                'Category'      =>  $category,
+                'Regular_Price' =>  $regularPrice,
+                'Sale_Price'    =>  $salePrice,
+                'Brand'         =>  $productData['vendor'],
+                'URL'           =>  $productUrl . '?variant=' . $variant['id'],
+                'Image_URL'     =>  $mainImageUrl,
+                'Description'   =>  $description,
             ];
         }
         return $productInfo;
