@@ -55,7 +55,15 @@
         $response = @file_get_contents($jsonUrl, false, get_context());
 
         if ($response === false) {
-            return null;
+            if (isset($http_response_header)) {
+                if(is_array($http_response_header) && strpos($http_response_header[0], '404') !== false) {
+                    echo "\t" . constyle("WARNING: Product not found: $productUrl", 93) . "\n";
+                    return null;
+                }
+            } else {
+                echo "\n\t" . constyle("ERROR: No internet connection. Please try again later.", 91) . "\n";
+                return "return";
+            }
         }
 
         $decoded = @json_decode($response, true);

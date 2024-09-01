@@ -81,11 +81,15 @@
                 foreach ($productUrls as $productUrl) {
                     $productData = scrapeProductData(count($productUrls), $p, $v, $productUrl);
                     if ($productData) {
-                        foreach ($productData as $product) {
-                            fputcsv($fp, $product);
+                        if(is_array($productData)) {
+                            foreach ($productData as $product) {
+                                fputcsv($fp, $product);
+                            }
+                            $p++;
+                            $v += count($productData);
+                        } else if(is_string($productData) && $productData == "return") {
+                            return;
                         }
-                        $p++;
-                        $v += count($productData);
                     }
                 }
                 fclose($fp);
