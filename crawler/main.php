@@ -22,8 +22,9 @@ START:
     echo constyle(constyle("\n\t\t\t[MENU]:\n\n", 96), 4);
     echo constyle(
         "\t\t1.\tRun Full Crawler\n".
-        "\t\t2.\tRun Part-1 Only\n".
-        "\t\t3.\tRun Part-2 Only\n".
+        "\t\t2.\tContinue from Part-1\n".
+        "\t\t3.\tRun Part-1 Only\n".
+        "\t\t4.\tRun Part-2 Only\n".
         "\t\t0.\tExit\n\n", 
     93);
 
@@ -56,6 +57,26 @@ INPUT:
 
         case '2':
             clear_console();
+            echo "\t" . constyle("[CONTINUE FROM PART-1]", 92) . "\n\n";
+            $p1 = part1(true); 
+
+            if($p1) {
+                echo "\t" . constyle("DONE!", 92) . "\n\n";
+                $p2 = part2();
+                if($p2) {
+                    echo "\t" . constyle("DONE!", 92) . "\n\n";
+                } else {
+                    echo "\t" . constyle("PART-2 FAILED TO EXECUTE!", 91) . "\n\n";
+                }
+            } else {
+                echo "\t" . constyle("PART-1 FAILED TO EXECUTE! PART-2 IGNORED...", 91) . "\n\n";
+            }
+            
+            pause();
+            goto START; break;
+
+        case '3':
+            clear_console();
             $p = part1();
 
             if($p) {
@@ -67,7 +88,7 @@ INPUT:
             pause();
             goto START; break;
 
-        case '3':
+        case '4':
             clear_console();
             $p = part2(); 
             

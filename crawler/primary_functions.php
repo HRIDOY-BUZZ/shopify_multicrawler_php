@@ -1,5 +1,5 @@
 <?php
-    function part1() {
+    function part1($cont = false) {
         echo "\n" . constyle(constyle("[PART-1]", 1), 96) .": Fetching product URLs ===> \n\n";
 
         if (!file_exists(__DIR__.'/../shops.txt')) {
@@ -28,9 +28,16 @@
                 echo "\t" . constyle("Error creating directory: `shops`. Please check permissions...", 91) . "\n\n";
                 return false;
             } else {
+
+                $shopFile = __DIR__ . '/../shops/' . $storeUrl . '.json';
+                
+                if ($cont && file_exists($shopFile)) {
+                    continue;
+                }
+
                 $productUrls = fetchProductUrls(count($storeUrls), $i, $storeUrl);
                 if ($productUrls) {
-                    saveToJson(__DIR__."/../shops/$storeUrl.json", $productUrls);
+                    saveToJson($shopFile, $productUrls);
                 }
             }
         }
