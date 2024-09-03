@@ -1,4 +1,21 @@
 <?php
+    function getShopList() {
+        if (!file_exists(__DIR__.'/../shops.txt')) {
+            echo "shops.txt not found.\n";
+            return false;
+        }
+
+        $storeUrls = file(__DIR__.'/../shops.txt', FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+        
+        if(empty($storeUrls)) {
+            echo "shops.txt is empty.\n";
+            return false;
+        }
+
+        $storeUrls = filter_domains($storeUrls);
+        return $storeUrls;
+    }
+
     function fetchProductUrls($count, $i, $storeUrl) {
         echo "$i of $count.\tFetching products from [" . constyle(strtoupper($storeUrl), 33) . "]\n\n";
 

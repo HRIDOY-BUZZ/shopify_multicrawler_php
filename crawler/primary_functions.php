@@ -2,19 +2,8 @@
     function part1($cont = false) {
         echo "\n" . constyle(constyle("[PART-1]", 1), 96) .": Fetching product URLs ===> \n\n";
 
-        if (!file_exists(__DIR__.'/../shops.txt')) {
-            echo "shops.txt not found.\n";
-            return false;
-        }
-
-        $storeUrls = file(__DIR__.'/../shops.txt', FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
-        
-        if(empty($storeUrls)) {
-            echo "shops.txt is empty.\n";
-            return false;
-        }
-
-        $storeUrls = filter_domains($storeUrls);
+        $storeUrls = getShopList();
+        if (!$storeUrls) return false;
         
         $i = 0;
         foreach ($storeUrls as $storeUrl) {
