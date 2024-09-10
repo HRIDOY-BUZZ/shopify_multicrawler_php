@@ -118,6 +118,21 @@
                 $salePrice = "";
             }
 
+            if($regularPrice <= 0 || $regularPrice == "") {
+                if( $salePrice != "" && $salePrice > 0) {
+                    $regularPrice = $salePrice;
+                    $salePrice = "";
+                } else {
+                    continue;
+                }
+            } else if($regularPrice == $salePrice) {
+                $salePrice = "";
+            } else if ($salePrice > $regularPrice) {
+                $temp = $regularPrice;
+                $regularPrice = $salePrice;
+                $salePrice = $temp;
+            }
+
             $variantTitle = $variant['title'];
             $mainImageUrl = $images[$variant['image_id']] ?? reset($images);
             $title = "$productTitle - $variantTitle";
