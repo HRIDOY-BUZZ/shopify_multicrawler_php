@@ -27,6 +27,8 @@ function get_context()
             return "break";
         }
 
+        // echo strlen($html) . "\n";
+
         if ($html === false) {
             echo "Failed to fetch $url\n";
             return "break";
@@ -73,6 +75,21 @@ function get_context()
         }
 
         return false;
+    }
+
+    function check_availability($xpath, $parent) {
+        $soldOut = $xpath->query(
+            ".//*[
+                    contains(translate(text(), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'), 'sold out') or 
+                    contains(translate(text(), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'), 'out of stock') or
+                    contains(translate(text(), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'), 'no stock') or
+                    contains(translate(text(), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'), 'unavailable') or
+                    contains(translate(text(), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'), 'not available') or
+                    contains(translate(text(), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'), 'not in stock')
+                ]", 
+                $parent
+            );
+        return $soldOut->length === 0;
     }
 
     function filter_domains($storeUrls) {

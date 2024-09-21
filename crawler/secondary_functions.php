@@ -22,7 +22,6 @@
         $collectionUrl = 'https://' . $storeUrl . '/collections/all';
         $productUrls = [];
         $page = 1;
-
         do {
             $url = $page == 1 ? $collectionUrl : $collectionUrl . "?page=$page";
             
@@ -30,8 +29,11 @@
 
             if($xpath == "break") break;
             // echo $url."\n";
-            $nodes = $xpath->query("//a[contains(@href, '/products/')]");
+            $nodes = $xpath->query("//a[contains(@href, '/collections/all/products/')]");
             // echo "\t\t\tTotal Nodes: " . count($nodes) . "\n\n";
+            if($nodes->length < 1) {
+                $nodes = $xpath->query("//a[contains(@href, '/products/')]");
+            }
             $i = 0;
             foreach ($nodes as $node) {
                 $purl = $node->getAttribute('href');
@@ -42,6 +44,14 @@
                 }
                 if(strpos($full_url, '#') !== false) {
                     $full_url = explode('#', $full_url)[0];
+                }
+                if(strpos($full_url, '?') !== false) {
+                    $full_url = explode('#', $full_url)[0];
+                }
+                $parent = $node->parentNode->parentNode;
+                $inStock = check_availability($xpath, $parent);
+                if($inStock === false) {
+                    continue;
                 }
                 if(!is_duplicate($full_url, $productUrls)) {
                     $productUrls[] = $full_url;
