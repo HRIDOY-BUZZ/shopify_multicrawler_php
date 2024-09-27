@@ -4,33 +4,27 @@
             echo "shops.txt not found.\n";
             return false;
         }
-
         $storeUrls = file(__DIR__.'/../shops.txt', FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
-        
         if(empty($storeUrls)) {
             echo "shops.txt is empty.\n";
             return false;
         }
-
         $storeUrls = filter_domains($storeUrls);
         return $storeUrls;
     }
 
     function fetchProductUrls($count, $i, $storeUrl) {
         echo "$i of $count.\tFetching products from [" . constyle(strtoupper($storeUrl), 33) . "]\n\n";
-
         $collectionUrl = 'https://' . $storeUrl . '/collections/all';
         $productUrls = [];
         $page = 1;
         do {
             $url = $page == 1 ? $collectionUrl : $collectionUrl . "?page=$page";
-            
             $xpath = getXPathData($url);
 
             if($xpath == "break") break;
-            // echo $url."\n";
+
             $nodes = $xpath->query("//a[contains(@href, '/collections/all/products/')]");
-            // echo "\t\t\tTotal Nodes: " . count($nodes) . "\n\n";
             if($nodes->length < 1) {
                 $nodes = $xpath->query("//a[contains(@href, '/products/')]");
             }
@@ -48,23 +42,16 @@
                 if(strpos($full_url, '?') !== false) {
                     $full_url = explode('#', $full_url)[0];
                 }
-                // $parent = $node->parentNode->parentNode;
-                // $inStock = check_availability($xpath, $parent);
-                // if($inStock === false) {
-                //     continue;
-                // }
                 if(!is_duplicate($full_url, $productUrls)) {
                     $productUrls[] = $full_url;
                     $i++;
                 }
             }
-
             if($i<1) break;
             else $page++;
 
             clear_line();
             echo constyle("\tPage: ", 92).constyle($page-1, 91).constyle(" ==> URLs in the Page: ", 92).constyle($i, 91).constyle(" ==> Total Product URLs: ", 92).constyle(count($productUrls), 91);
-
         } while (!empty($nodes));
 
         clear_line();
@@ -72,7 +59,6 @@
         sleep(1);
         clear_line();
         echo "\t" . constyle("Total Product URLs Found: ", 93).constyle(constyle(count($productUrls), 91), 1) . "\n\n";
-
         return array_unique($productUrls);
     }
 
@@ -92,7 +78,6 @@
                 return "return";
             }
         }
-
         $decoded = @json_decode($response, true);
         if (json_last_error() !== JSON_ERROR_NONE) {
             return null;
@@ -102,50 +87,23 @@
         if (!$productData) {
             return null;
         }
-
         $productInfo = [];
         $productTitle = $productData['title'];
         $description = strip_tags($productData['description']);
         $category = $productData['type'] ? $productData['type'] : '';
-
-        // $images = [];
-        // foreach ($productData['images'] as $img) {
-        //     $images[$img['id']] = $img['src'];
-        // }
         $productImage = $productData['featured_image'] ? $productData['featured_image'] : '';
-
         $p++;
         foreach ($productData['variants'] as $variant) {
+            $price = getPrice($variant['price'], $variant['compare_at_price']);
 
-            if($variant['price'] == null || $variant['price'] == 0 || $variant['price'] == "") {
-                continue;
-            }
+            if(!$price) continue;
 
-            if($variant['compare_at_price'] && $variant['compare_at_price'] != "") {
-                $regularPrice = $variant['compare_at_price'];
-                $salePrice = $variant['price'];
-            } else {
-                $regularPrice = $variant['price'];
-                $salePrice = "";
-            }
-
-            if($regularPrice <= 0 || $regularPrice == "") {
-                if( $salePrice != "" && $salePrice > 0) {
-                    $regularPrice = $salePrice;
-                    $salePrice = "";
-                } else {
-                    continue;
-                }
-            } else if($regularPrice == $salePrice) {
-                $salePrice = "";
-            } else if ($salePrice > $regularPrice) {
-                $temp = $regularPrice;
-                $regularPrice = $salePrice;
-                $salePrice = $temp;
-            }
+            $regularPrice = $price[0];
+            $salePrice = $price[1];
 
             $variantTitle = $variant['title'];
             $mainImageUrl = $variant['featured_image'] ? $variant['featured_image']['src'] : $productImage;
+            $mainImageUrl = formatURL($mainImageUrl);
             $available = $variant['available'];
 
             $title = $variant['name'] ? $variant['name'] : $productTitle . " - " . $variantTitle;
