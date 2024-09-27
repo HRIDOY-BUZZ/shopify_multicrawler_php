@@ -62,7 +62,7 @@
                     return false;
                 }
 
-                fputcsv($fp, array("ID", "Title", "Category", "Regular Price", "Sale Price", "Brand", "URL", "ImageURL", "Description"));
+                fputcsv($fp, array("ID", "Title", "Category", "Regular Price", "Sale Price", "Brand",  "Stock", "URL", "ImageURL", "Description"));
                 
                 echo ++$i . " of ". count($shopFiles) . ".\tCrawling products from [" . constyle(strtoupper($storeDomain), 33) . "]\n\n";
                 

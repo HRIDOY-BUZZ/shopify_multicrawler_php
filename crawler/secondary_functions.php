@@ -48,11 +48,11 @@
                 if(strpos($full_url, '?') !== false) {
                     $full_url = explode('#', $full_url)[0];
                 }
-                $parent = $node->parentNode->parentNode;
-                $inStock = check_availability($xpath, $parent);
-                if($inStock === false) {
-                    continue;
-                }
+                // $parent = $node->parentNode->parentNode;
+                // $inStock = check_availability($xpath, $parent);
+                // if($inStock === false) {
+                //     continue;
+                // }
                 if(!is_duplicate($full_url, $productUrls)) {
                     $productUrls[] = $full_url;
                     $i++;
@@ -78,7 +78,7 @@
 
     function scrapeProductData($count, $p, $v, $productUrl) {
         $prcnt = 0;
-        $jsonUrl = $productUrl . '.json';
+        $jsonUrl = $productUrl . '.js';
         $response = @file_get_contents($jsonUrl, false, get_context());
 
         if ($response === false) {
@@ -98,25 +98,26 @@
             return null;
         }
 
-        $productData = $decoded['product'];
+        $productData = $decoded;
         if (!$productData) {
             return null;
         }
 
         $productInfo = [];
         $productTitle = $productData['title'];
-        $description = strip_tags($productData['body_html']);
-        $category = $productData['product_type'] ? $productData['product_type'] : '';
+        $description = strip_tags($productData['description']);
+        $category = $productData['type'] ? $productData['type'] : '';
 
-        $images = [];
-        foreach ($productData['images'] as $img) {
-            $images[$img['id']] = $img['src'];
-        }
+        // $images = [];
+        // foreach ($productData['images'] as $img) {
+        //     $images[$img['id']] = $img['src'];
+        // }
+        $productImage = $productData['featured_image'] ? $productData['featured_image'] : '';
 
         $p++;
         foreach ($productData['variants'] as $variant) {
 
-            if($variant['price'] == 0 || $variant['price'] == "") {
+            if($variant['price'] == null || $variant['price'] == 0 || $variant['price'] == "") {
                 continue;
             }
 
@@ -144,8 +145,10 @@
             }
 
             $variantTitle = $variant['title'];
-            $mainImageUrl = $images[$variant['image_id']] ?? reset($images);
-            $title = "$productTitle - $variantTitle";
+            $mainImageUrl = $variant['featured_image'] ? $variant['featured_image']['src'] : $productImage;
+            $available = $variant['available'];
+
+            $title = $variant['name'] ? $variant['name'] : $productTitle . " - " . $variantTitle;
 
             $prcnt = round(($p / $count) * 100, 0);
             clear_line();
@@ -158,6 +161,7 @@
                 'Regular_Price' =>  $regularPrice,
                 'Sale_Price'    =>  $salePrice,
                 'Brand'         =>  $productData['vendor'],
+                'Stock'         =>  $available ? 'yes' : 'no',
                 'URL'           =>  $productUrl . '?variant=' . $variant['id'],
                 'Image_URL'     =>  $mainImageUrl,
                 'Description'   =>  $description,
