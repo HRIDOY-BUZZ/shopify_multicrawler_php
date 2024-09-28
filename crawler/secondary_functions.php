@@ -104,7 +104,7 @@
             $variantTitle = $variant['title'];
             $mainImageUrl = $variant['featured_image'] ? $variant['featured_image']['src'] : $productImage;
             $mainImageUrl = formatURL($mainImageUrl);
-            $available = $variant['available'];
+            $available = $variant['available'] ? $variant['available'] : true;
 
             $title = $variant['name'] ? $variant['name'] : $productTitle . " - " . $variantTitle;
 
