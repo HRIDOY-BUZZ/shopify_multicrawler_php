@@ -95,6 +95,13 @@ function get_context()
             $regularPrice = $salePrice;
             $salePrice = $temp;
         }
+
+        if(is_numeric($regularPrice)) {
+            $regularPrice = $regularPrice / 100;
+        }
+        if(is_numeric($salePrice)) {
+            $salePrice = $salePrice / 100;
+        }
         return [$regularPrice, $salePrice];
     }
 
