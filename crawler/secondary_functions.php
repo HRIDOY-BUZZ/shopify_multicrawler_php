@@ -101,10 +101,10 @@
             $regularPrice = $price[0];
             $salePrice = $price[1];
 
-            $variantTitle = $variant['title'];
-            $mainImageUrl = $variant['featured_image'] ? $variant['featured_image']['src'] : $productImage;
-            $mainImageUrl = formatURL($mainImageUrl);
-            $available = $variant['available'] ? $variant['available'] : true;
+            $variantTitle   =   $variant['title'];
+            $mainImageUrl   =   $variant['featured_image'] ? $variant['featured_image']['src'] : $productImage;
+            $mainImageUrl   =   formatURL($mainImageUrl);
+            $available      =   $variant['available'];
 
             $title = $variant['name'] ? $variant['name'] : $productTitle . " - " . $variantTitle;
 

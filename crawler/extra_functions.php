@@ -88,13 +88,17 @@ function get_context()
             } else {
                 return false;
             }
+        } else if($salePrice > $regularPrice) {
+            $regularPrice = $salePrice;
+            $salePrice = "";
         } else if($regularPrice == $salePrice) {
             $salePrice = "";
-        } else if ($salePrice > $regularPrice) {
-            $temp = $regularPrice;
-            $regularPrice = $salePrice;
-            $salePrice = $temp;
         }
+        // else if ($salePrice > $regularPrice) {
+        //     $temp = $regularPrice;
+        //     $regularPrice = $salePrice;
+        //     $salePrice = $temp;
+        // }
 
         if(is_numeric($regularPrice)) {
             $regularPrice = $regularPrice / 100;
